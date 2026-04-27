@@ -15,7 +15,6 @@ checkpoints/
 
 # 大数据文件
 data/submissions.csv
-data/gold/submissions.csv
 data/All/
 data/standard/submissions.csv
 
