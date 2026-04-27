@@ -1,0 +1,70 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.egg-info/
+dist/
+build/
+.eggs/
+
+# 模型权重
+checkpoints/
+*.pth
+*.pt
+*.ckpt
+
+# 大数据文件
+data/submissions.csv
+data/All/
+data/standard/submissions.csv
+
+# 日志 & 实验输出
+logs/
+results/
+*.log
+*.out
+mastery_validation_gold.txt
+oj_kt_project/baseline_tuning_grid.csv
+oj_kt_project/baseline_tuning_results.csv
+
+# 论文文档（二进制大文件）
+paper/
+
+# Claude Code 内部文件
+.claude/
+AUTO_REVIEW.md
+REVIEW_STATE.json
+CLAUDE.md
+
+# knowledge-tracing-collection-pytorch 只保留 models/
+knowledge-tracing-collection-pytorch/ckpts/
+knowledge-tracing-collection-pytorch/datasets/
+knowledge-tracing-collection-pytorch/data_loaders/
+knowledge-tracing-collection-pytorch/assets/
+knowledge-tracing-collection-pytorch/train.py
+knowledge-tracing-collection-pytorch/test.py
+knowledge-tracing-collection-pytorch/run_oj_comparison.py
+knowledge-tracing-collection-pytorch/config.json
+knowledge-tracing-collection-pytorch/requirements.txt
+knowledge-tracing-collection-pytorch/LICENSE
+knowledge-tracing-collection-pytorch/README.md
+knowledge-tracing-collection-pytorch/.gitignore
+
+# 嵌套 .gitignore（根目录已统一管理）
+oj_kt_project/.gitignore
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# 环境
+.env
+venv/
+.venv/
