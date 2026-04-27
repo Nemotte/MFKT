@@ -13,11 +13,6 @@ checkpoints/
 *.pt
 *.ckpt
 
-# 大数据文件
-data/submissions.csv
-data/All/
-data/standard/submissions.csv
-
 # 日志 & 实验输出
 logs/
 results/
