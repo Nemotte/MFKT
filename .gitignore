@@ -27,8 +27,9 @@ paper/
 
 data/All/
 
-# 匿名化映射（含真实用户名，不入库）
+# 匿名化映射（含真实信息，不入库）
 data/user_mapping.json
+data/anon_mapping.json
 
 # Claude Code 内部文件
 .claude/
