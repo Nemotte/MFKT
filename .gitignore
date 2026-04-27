@@ -25,6 +25,8 @@ oj_kt_project/baseline_tuning_results.csv
 # 论文文档（二进制大文件）
 paper/
 
+data/All/
+
 # Claude Code 内部文件
 .claude/
 AUTO_REVIEW.md
