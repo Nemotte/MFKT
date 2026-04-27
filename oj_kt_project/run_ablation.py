@@ -13,6 +13,9 @@
   python run_ablation.py --variants w/o-time w/o-KG-attention  # 指定变体
   python run_ablation.py --k-folds 3              # 3折（加速）
 """
+import sys
+import os
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import torch
 import numpy as np
 import logging

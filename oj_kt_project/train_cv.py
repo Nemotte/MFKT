@@ -5,8 +5,10 @@ K 折交叉验证训练入口（统一 OJ / CodeWorkout）
   python train_cv.py --dataset-type oj --models DKT,SAKT
   python train_cv.py --dataset-type codeworkout --data-dir ../data/All
 """
-import numpy as np
+import sys
 import os
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import numpy as np
 import logging
 import argparse
 

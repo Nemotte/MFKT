@@ -3,11 +3,12 @@ Code-DKT 在 CodeWorkout 数据集上的 K 折交叉验证
 
 独立脚本，不修改现有 dataset/collate_fn，自带 Code-DKT 专用数据管线。
 """
+import os
+import sys
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import torch
 import torch.nn as nn
 import numpy as np
-import os
-import sys
 import logging
 import argparse
 import copy

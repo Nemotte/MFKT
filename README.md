@@ -1,98 +1,97 @@
-# MFKT — OJ 编程教育知识追踪
+# MFKT — Multi-Feature Knowledge Tracing for Online Judge Systems
 
-基于多特征融合的 Transformer 架构，利用 OJ（Online Judge）提交元数据（评判结果、得分、时间/内存用量）预测学生知识掌握状态。目标会议：ICIC2026。
+A Transformer-based knowledge tracing model that leverages OJ submission metadata (verdict types, scores, time/memory usage) to predict student knowledge states. Target venue: ICIC 2026.
 
-## 目录结构
+## Repository Structure
 
 ```
-oj_kt/
-├── oj_kt_project/              # 主项目代码
-│   ├── config.py               # 全局超参数配置（Config dataclass）
-│   ├── train_cv.py             # 主入口：K折交叉验证训练
-│   ├── run_ablation.py         # 消融实验
-│   ├── run_stat_test.py        # 统计显著性检验（Wilcoxon）
-│   ├── hyperparam_search.py    # 超参搜索
-│   ├── experiment_mastery_validation.py  # 掌握度验证实验
-│   ├── train_code_dkt.py       # Code-DKT baseline（独立流程）
-│   ├── data/                   # 数据预处理
-│   │   ├── preprocessor.py     # OJ 数据集预处理
-│   │   ├── codeworkout_preprocessor.py
-│   │   ├── dataset.py          # StudentTimelineDataset
-│   │   └── knowledge_structure.py
-│   ├── models/                 # 模型定义
-│   │   ├── model.py            # MFKT 主模型
-│   │   ├── sequence_model.py   # LSTM / Transformer 序列编码器
-│   │   ├── attempt_encoder.py  # 单题提交序列 GRU 编码器
-│   │   ├── q_matrix.py         # 可学习 Q 矩阵
-│   │   ├── baselines.py        # 16 个 baseline 模型 wrapper
-│   │   └── registry.py         # 模型注册表
+MFKT/
+├── oj_kt_project/
+│   ├── config.py                        # Global hyperparameters (Config dataclass)
+│   ├── train_cv.py                      # Main entry: K-fold cross-validation training
+│   ├── run_ablation.py                  # Ablation study
+│   ├── run_stat_test.py                 # Statistical significance test (Wilcoxon)
+│   ├── hyperparam_search.py             # Hyperparameter grid search
+│   ├── experiment_mastery_validation.py # Mastery validation experiment
+│   ├── baseline_tuning.py               # Baseline hyperparameter tuning
+│   ├── train_code_dkt.py                # Code-DKT baseline (standalone pipeline)
+│   ├── data/
+│   │   ├── preprocessor.py              # OJ dataset preprocessor
+│   │   ├── codeworkout_preprocessor.py  # CodeWorkout/CSEDM preprocessor
+│   │   ├── dataset.py                   # StudentTimelineDataset
+│   │   └── knowledge_structure.py       # Prerequisite knowledge graph
+│   ├── models/
+│   │   ├── model.py                     # MFKT main model
+│   │   ├── sequence_model.py            # LSTM / Transformer encoder
+│   │   ├── attempt_encoder.py           # Per-problem submission GRU encoder
+│   │   ├── q_matrix.py                  # Learnable Q-matrix
+│   │   ├── baselines.py                 # 16 baseline model wrappers
+│   │   └── registry.py                  # Model registry
 │   └── utils/
-│       ├── trainer.py          # 多任务训练循环（含 SWA、早停）
-│       ├── evaluation.py       # K折划分、训练一折
-│       └── metrics.py          # AUC、balanced acc、F1、mastery MAE
-├── data/                       # 数据文件
-│   ├── gold/problems.json      # 主数据集题目信息
+│       ├── trainer.py                   # Multi-task training loop (SWA, early stopping)
+│       ├── evaluation.py                # K-fold split, train one fold
+│       └── metrics.py                   # AUC, balanced acc, F1, mastery MAE
+├── data/
+│   ├── gold/
+│   │   ├── submissions.csv              # OJ gold dataset (primary)
+│   │   └── problems.json
 │   ├── standard/problems.json
-│   ├── knowledge_points.json   # 知识点定义及先修关系
+│   ├── knowledge_points.json            # Knowledge point definitions and prerequisites
 │   └── problems.json
-└── knowledge-tracing-collection-pytorch/  # Baseline 模型库（本地依赖）
-    └── models/                 # DKT、DKVMN、SAKT、AKT 等模型实现
+└── knowledge-tracing-collection-pytorch/
+    └── models/                          # Baseline implementations (DKT, DKVMN, SAKT, AKT, ...)
 ```
 
-## 环境依赖
+## Setup
 
 ```bash
 conda activate dkt
-# 或按 requirements.txt 安装
+# or
 pip install -r oj_kt_project/requirements.txt
 ```
 
-## 运行
+## Usage
 
-所有命令从 `oj_kt_project/` 目录执行：
+All commands are run from the **repository root**.
 
 ```bash
-cd oj_kt_project
+# K-fold cross-validation (primary entry point)
+python oj_kt_project/train_cv.py --dataset-type oj --dataset gold --k-folds 5
 
-# K 折交叉验证（主要入口）
-python train_cv.py --dataset-type oj --dataset gold --k-folds 5
+# Run specific models only
+python oj_kt_project/train_cv.py --dataset-type oj --models DKT,SAKT,Ours-Transformer
 
-# 只跑指定模型
-python train_cv.py --dataset-type oj --models DKT,SAKT,Ours-Transformer
+# CodeWorkout dataset
+python oj_kt_project/train_cv.py --dataset-type codeworkout
 
-# CodeWorkout 数据集
-python train_cv.py --dataset-type codeworkout
+# Ablation study
+python oj_kt_project/run_ablation.py --dataset gold --k-folds 5      # all groups
+python oj_kt_project/run_ablation.py --groups A                       # input feature ablations
+python oj_kt_project/run_ablation.py --groups B C                     # architecture + training
+python oj_kt_project/run_ablation.py --variants w/o-time w/o-KG-attention
 
-# 消融实验
-python run_ablation.py --dataset gold --k-folds 5      # 全部消融组
-python run_ablation.py --groups A                       # 仅输入特征消融
-python run_ablation.py --groups B C                     # 架构 + 训练策略
-python run_ablation.py --variants w/o-time w/o-KG-attention
+# Statistical significance test (MFKT vs baselines, Wilcoxon signed-rank)
+python oj_kt_project/run_stat_test.py
 
-# 统计显著性检验（MFKT vs baselines，Wilcoxon signed-rank）
-python run_stat_test.py
+# Hyperparameter search (2-fold grid search)
+python oj_kt_project/hyperparam_search.py
 
-# 超参搜索（2折网格搜索）
-python hyperparam_search.py
-
-# 掌握度验证实验
-python experiment_mastery_validation.py --dataset gold
+# Mastery validation experiment
+python oj_kt_project/experiment_mastery_validation.py --dataset gold
 ```
 
-## 数据说明
+## Datasets
 
-| 数据集 | 路径 | 说明 |
-|--------|------|------|
-| OJ gold | `data/gold/` + `data/submissions.csv` | 主数据集，6种评判结果 |
-| OJ standard | `data/standard/` | 标准划分版本 |
-| CodeWorkout | `data/All/` | CSEDM 数据集，二值评判 |
+| Dataset | Path | Description |
+|---------|------|-------------|
+| OJ gold | `data/gold/` | Primary dataset, 6 verdict types (AC/WA/TLE/MLE/RE/CE) |
+| OJ standard | `data/standard/` | Standard split variant |
+| CodeWorkout | `data/All/` | CSEDM dataset, binary verdicts — not included, provide separately |
 
-> 大型 CSV（`submissions.csv`、`data/All/`）不纳入版本控制，需单独获取。
+## Model Architecture
 
-## 模型架构（MFKT）
+Input encoding → Feature fusion projection → Sequence model (LSTM/Transformer) → KG-guided attention → Dual output heads
 
-输入编码 → 特征融合投影 → 序列模型（LSTM/Transformer）→ KG 引导注意力 → 双头输出
-
-- **AC 预测头**：下一题是否答对（二分类，BCE + Focal Loss）
-- **掌握度头**：每个知识点掌握程度（多标签回归，MSE）
-- 损失：`L = λ_ac * FocalLoss + λ_mastery * MSE + λ_q * Q_reg`
+- **AC head**: next-problem correctness prediction (binary, BCE + Focal Loss)
+- **Mastery head**: per-knowledge-point mastery (multi-label regression, MSE)
+- Loss: `L = λ_ac · FocalLoss + λ_mastery · MSE + λ_q · Q_reg`

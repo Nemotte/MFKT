@@ -17,12 +17,14 @@ Baseline 独立超参调优实验 — 回应评审 2 的 Priority Revision 2
   python baseline_tuning.py --models DKT,AKT       # 仅指定模型
   python baseline_tuning.py --grid quick           # 仅 2 组（冒烟测试）
 """
+import os
+import sys
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import argparse
 import copy
 import csv
 import itertools
 import logging
-import os
 import sys
 import time
 from collections import defaultdict
